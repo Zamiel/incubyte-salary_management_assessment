@@ -8,4 +8,9 @@ public class User
 
     public required string DisplayName { get; set; }
     public required string Email { get; set; }
+
+    public string? PasswordHash { get; set; }
+    public int AccessFailedCount { get; set; }
+    public DateTimeOffset? LastFailedAt { get; set; }  
+    public DateTimeOffset? LockoutEnd { get; set; }
 }
