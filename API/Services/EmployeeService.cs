@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using API.Data;
 using API.DTOs;
 using API.Entities;
@@ -10,28 +9,6 @@ public sealed class EmployeeService(AppDbContext db, TimeProvider clock) : IEmpl
 {
     private const int DefaultPageSize = 50;
     private const int MaxPageSize = 200;
-
-    // Shared projection. Used as an expression tree in LINQ (translates to SQL),
-    // and compiled for in-memory use after Create/Terminate.
-    private static readonly Expression<Func<Employee, EmployeeListItem>> Projection =
-        e => new EmployeeListItem(
-            e.Id,
-            e.FirstName,
-            e.LastName,
-            e.Email,
-            e.JobTitle,
-            e.Department,
-            e.Country,
-            e.Currency,
-            e.BaseSalary,
-            e.Bonuses,
-            e.BaseSalary + e.Bonuses,
-            e.HireDate,
-            e.TerminationDate,
-            e.IsActive);
-
-    private static readonly Func<Employee, EmployeeListItem> ProjectionCompiled =
-        Projection.Compile();
 
     public async Task<EmployeeListResponse> ListAsync(
         int page,
@@ -54,7 +31,21 @@ public sealed class EmployeeService(AppDbContext db, TimeProvider clock) : IEmpl
             .ThenBy(e => e.FirstName)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(Projection)
+            .Select(e => new EmployeeListItem(
+                e.Id,
+                e.FirstName,
+                e.LastName,
+                e.Email,
+                e.JobTitle,
+                e.Department,
+                e.Country,
+                e.Currency,
+                e.BaseSalary,
+                e.Bonuses,
+                e.BaseSalary + e.Bonuses,
+                e.HireDate,
+                e.TerminationDate,
+                e.IsActive))
             .ToListAsync(ct);
 
         return new EmployeeListResponse(page, pageSize, total, items);
@@ -100,7 +91,7 @@ public sealed class EmployeeService(AppDbContext db, TimeProvider clock) : IEmpl
         db.Employees.Add(employee);
         await db.SaveChangesAsync(ct);
 
-        return new EmployeeCreateResult.Created(ProjectionCompiled(employee));
+        return new EmployeeCreateResult.Created(ToListItem(employee));
     }
 
     public async Task<EmployeeTerminateResult> TerminateAsync(
@@ -120,6 +111,22 @@ public sealed class EmployeeService(AppDbContext db, TimeProvider clock) : IEmpl
         employee.TerminationDate = DateOnly.FromDateTime(clock.GetUtcNow().DateTime);
         await db.SaveChangesAsync(ct);
 
-        return new EmployeeTerminateResult.Terminated(ProjectionCompiled(employee));
+        return new EmployeeTerminateResult.Terminated(ToListItem(employee));
     }
+
+    private static EmployeeListItem ToListItem(Employee e) => new(
+        e.Id,
+        e.FirstName,
+        e.LastName,
+        e.Email,
+        e.JobTitle,
+        e.Department,
+        e.Country,
+        e.Currency,
+        e.BaseSalary,
+        e.Bonuses,
+        e.BaseSalary + e.Bonuses,
+        e.HireDate,
+        e.TerminationDate,
+        e.IsActive);
 }

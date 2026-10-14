@@ -32,6 +32,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -55,7 +56,6 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 var app = builder.Build();
 
