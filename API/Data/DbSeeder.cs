@@ -27,7 +27,7 @@ public static class DbSeeder
         var normalized = email.Trim().ToLowerInvariant();
         if (await db.Users.AnyAsync(u => u.Email == normalized, ct)) return;
 
-        var user = new User { Email = normalized, DisplayName = "HR Manager" };
+        var user = new User { Email = normalized, DisplayName = "HR Manager", Role = UserRole.Hr };
         user.PasswordHash = hasher.HashPassword(user, password);
 
         db.Users.Add(user);

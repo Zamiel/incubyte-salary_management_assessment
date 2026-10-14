@@ -18,7 +18,7 @@ public sealed class AuthService(
 
     // Verified against when the email doesn't exist, so timing is similar.
     private static readonly string DummyHash =
-        new PasswordHasher<User>().HashPassword(new User { DisplayName = "_", Email = "_" },
+        new PasswordHasher<User>().HashPassword(new User { DisplayName = "_", Email = "_", Role = UserRole.Hr },
                                                 "timing-equalisation-only");
 
     public async Task<LoginResult> LoginAsync(string email, string password, CancellationToken ct = default)
@@ -31,7 +31,7 @@ public sealed class AuthService(
         if (user is null || user.PasswordHash is null)
         {
             // Burn roughly the same amount of CPU as a real verify would.
-            passwordHasher.VerifyHashedPassword(new User { DisplayName = "_", Email = "_" },
+            passwordHasher.VerifyHashedPassword(new User { DisplayName = "_", Email = "_", Role = UserRole.Hr },
                                                 DummyHash, password);
             return new LoginResult.InvalidCredentials();
         }

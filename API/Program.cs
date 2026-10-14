@@ -50,13 +50,14 @@ builder.Services
             ClockSkew = TimeSpan.FromSeconds(30),
             ValidAlgorithms = [SecurityAlgorithms.HmacSha256],
             NameClaimType = "email",
+            RoleClaimType = "role"
         };
     });
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-Console.WriteLine($"----------------------- Environment: {app.Environment.EnvironmentName}");
+
 app.UseAuthentication();
 app.UseAuthorization();
 

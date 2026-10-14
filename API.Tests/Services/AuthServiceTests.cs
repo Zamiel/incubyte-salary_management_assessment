@@ -26,7 +26,7 @@ public class AuthServiceTests
         var hasher = new PasswordHasher<User>();
         var clock = new FakeTimeProvider(now ?? DateTimeOffset.UtcNow);
 
-        var user = new User { Email = TestEmail, DisplayName = "HR Manager" };
+        var user = new User { Email = TestEmail, DisplayName = "HR Manager", Role = UserRole.Hr };
         user.PasswordHash = hasher.HashPassword(user, TestPassword);
 
         db.Users.Add(user);

@@ -8,6 +8,7 @@ public class User
 
     public required string DisplayName { get; set; }
     public required string Email { get; set; }
+    public required UserRole Role { get; set; }
 
     public string? PasswordHash { get; set; }
     public int AccessFailedCount { get; set; }

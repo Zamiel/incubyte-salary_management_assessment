@@ -29,6 +29,7 @@ public sealed class TokenService(IOptions<JwtSettings> options, TimeProvider clo
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
+                new Claim("role", user.Role.ToString())
             ]),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SigningKey)),
