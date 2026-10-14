@@ -42,6 +42,7 @@ namespace API.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FirstName")
@@ -62,7 +63,13 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateOnly?>("TerminationDate")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Employees");
                 });
