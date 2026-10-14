@@ -11,9 +11,6 @@ namespace API.Controllers;
 public class EmployeesController(IEmployeeService employees) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType<EmployeeListResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<EmployeeListResponse>> GetEmployees(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 50,
@@ -25,16 +22,10 @@ public class EmployeesController(IEmployeeService employees) : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType<EmployeeListItem>(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<EmployeeListItem>> CreateEmployee(
         [FromBody] CreateEmployeeRequest request,
         CancellationToken ct)
     {
-        var shapeError = ValidateShape(request);
-        if (shapeError is not null) return shapeError;
-
         var result = await employees.CreateAsync(request, ct);
 
         return result switch
@@ -61,9 +52,6 @@ public class EmployeesController(IEmployeeService employees) : ControllerBase
     }
 
     [HttpPost("{id}/terminate")]
-    [ProducesResponseType<EmployeeListItem>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<EmployeeListItem>> TerminateEmployee(
         string id,
         CancellationToken ct)
@@ -84,46 +72,5 @@ public class EmployeesController(IEmployeeService employees) : ControllerBase
 
             _ => StatusCode(StatusCodes.Status500InternalServerError),
         };
-    }
-    
-    private ActionResult? ValidateShape(CreateEmployeeRequest r)
-    {
-        if (string.IsNullOrWhiteSpace(r.FirstName) ||
-            string.IsNullOrWhiteSpace(r.LastName) ||
-            string.IsNullOrWhiteSpace(r.Email) ||
-            string.IsNullOrWhiteSpace(r.JobTitle) ||
-            string.IsNullOrWhiteSpace(r.Department) ||
-            string.IsNullOrWhiteSpace(r.Country) ||
-            string.IsNullOrWhiteSpace(r.Currency))
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "Missing required fields",
-                Detail = "FirstName, LastName, Email, JobTitle, Department, Country, and Currency are required.",
-                Status = StatusCodes.Status400BadRequest,
-            });
-        }
-
-        if (!r.Email.Contains('@') || r.Email.Length < 3)
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "Invalid email",
-                Detail = "Email must be a valid address.",
-                Status = StatusCodes.Status400BadRequest,
-            });
-        }
-
-        if (r.BaseSalary < 0 || r.Bonuses < 0)
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "Invalid salary",
-                Detail = "BaseSalary and Bonuses must be non-negative.",
-                Status = StatusCodes.Status400BadRequest,
-            });
-        }
-
-        return null;
     }
 }
