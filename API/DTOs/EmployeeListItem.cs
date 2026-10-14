@@ -14,5 +14,6 @@ public sealed record EmployeeListItem
     decimal Bonuses,
     decimal TotalCompensation,
     DateOnly HireDate,
+    DateOnly? TerminationDate,
     bool IsActive
 );
