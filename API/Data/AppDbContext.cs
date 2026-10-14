@@ -24,5 +24,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasMaxLength(32)
                 .IsRequired();
         });
+
+        modelBuilder.Entity<Employee>(entity =>
+        {
+            entity.Property(e => e.Email).HasMaxLength(256).IsRequired();
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
     }
 }

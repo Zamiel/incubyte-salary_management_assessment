@@ -18,6 +18,8 @@ public class Employee
     public decimal Bonuses { get; set; }
     public DateOnly HireDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
     public bool IsActive { get; set; } = true;
+    
+    public DateOnly? TerminationDate { get; set; }
 
     public decimal TotalCompensation => BaseSalary + Bonuses;
 }
