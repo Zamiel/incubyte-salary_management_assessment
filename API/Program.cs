@@ -20,7 +20,15 @@ if (string.IsNullOrWhiteSpace(jwt.SigningKey) || jwt.SigningKey.Length < 32)
 }
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins("https://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
@@ -59,7 +67,7 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
