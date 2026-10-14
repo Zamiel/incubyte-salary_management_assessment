@@ -48,7 +48,7 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("HireDate")
+                    b.Property<DateOnly>("HireDate")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
