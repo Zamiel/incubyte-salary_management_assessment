@@ -21,12 +21,16 @@ public sealed class AnalyticsService(AppDbContext db) : IAnalyticsService
         bool includeInactive,
         CancellationToken ct)
     {
-        return await BaseQuery(includeInactive)
+        var groups = await BaseQuery(includeInactive)
             .GroupBy(e => e.Department)
-            .Select(g => new HeadcountByDepartment(g.Key, g.Count()))
+            .Select(g => new { Department = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+
+        return groups
+            .Select(g => new HeadcountByDepartment(g.Department, g.Count))
             .OrderByDescending(x => x.EmployeeCount)
             .ThenBy(x => x.Department)
-            .ToListAsync(ct);
+            .ToList();
     }
 
     public async Task<IReadOnlyList<AverageSalaryByDepartment>> GetAverageSalaryByDepartmentAsync(
