@@ -72,5 +72,6 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 await DbSeeder.SeedAsync(app.Services);
+await EmployeeSeeder.SeedAsync(app.Services);
 
 app.Run();
